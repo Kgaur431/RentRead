@@ -50,6 +50,40 @@ First, create a new database for the project in MySQL:
 
 ```sql
 CREATE DATABASE rentread_db;
+use rentread_db;
+
+
+CREATE TABLE books (
+                      id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                      title VARCHAR(255) NOT NULL,
+                      author VARCHAR(255) NOT NULL,
+                      genre VARCHAR(255) NOT NULL,
+                      availability_status BOOLEAN NOT NULL DEFAULT TRUE  -- Renamed and set default value
+);
+
+CREATE TABLE users (
+                      id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                      email VARCHAR(255) NOT NULL UNIQUE,
+                      password VARCHAR(255) NOT NULL,
+                      first_name VARCHAR(255) NOT NULL,
+                      last_name VARCHAR(255) NOT NULL,
+                      role ENUM('USER', 'ADMIN') NOT NULL
+);
+
+CREATE TABLE rentals (
+                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                        user_id BIGINT NOT NULL,
+                        book_id BIGINT NOT NULL,
+                        rental_date DATE NOT NULL,
+                        return_date DATE,
+                        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                        FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
+                        CHECK (return_date IS NULL OR return_date >= rental_date)  -- Ensuring return date is valid
+);
+
+alter table rentals modify column rental_date varchar(255) not null;
+alter table rentals modify column return_date varchar(255)
+
 ```
 
 ### 2. **Update Database Configuration:**
